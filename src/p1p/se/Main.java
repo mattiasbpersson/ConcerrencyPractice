@@ -20,10 +20,19 @@ public class Main {
     Path directory = SetupEnvironment.makeItSo(10, 10_000_000);
     LocalTime time = LocalTime.now();
 
-    Files.list(directory)
+    Map<Integer, Long> result = Files.list(directory)
         .filter(p -> p.toString().contains(SetupEnvironment.FILE_NAME))
-        .forEach(Main::calculate);
+        .map(Main::calculate)
+        .map(Map::entrySet)
+        .flatMap(Collection::stream)
+        .collect(
+            Collectors.toMap(
+                k -> k.getKey(),
+                v -> v.getValue(),
+                (s1, s2) -> s1 + s2
+            ));
     System.out.println("Time: " + time.until(LocalTime.now(), ChronoUnit.MILLIS));
+    System.out.println("Result: " + result);
   }
 
   private static Map<Integer, Long> calculate(Path path) {
@@ -31,7 +40,7 @@ public class Main {
     try {
       result = Files.lines(path).map(s -> Integer.parseInt(s))
           .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-      System.out.println("Result: " + result);
+      //System.out.println("Result: " + result);
     } catch (IOException e) {
       e.printStackTrace();
     }
