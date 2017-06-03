@@ -53,7 +53,6 @@ public class SetupEnvironment {
     rand.ints(size).map(n -> Math.abs(n) % 10).forEach(i -> {
       try {
         String out = Integer.toString(i);
-        //System.out.println(out);
         writer.append(out);
         writer.newLine();
       } catch (Exception e) {
